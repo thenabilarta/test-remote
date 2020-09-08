@@ -30,19 +30,18 @@ passport.use(
       callbackURL: '/auth/google/callback',
       proxy: true,
     },
-    (accessToken, refreshToken, profile, done) => {
+    // ubah jadi async await
+    async (accessToken, refreshToken, profile, done) => {
       // cara mastiin biar yang udah pernah auth ngga ke save 2 kali
-      User.findOne({googleId: profile.id}).then((existingUser) => {
-        if (existingUser) {
-          // We already have a record with the given profile ID
-          done(null, existingUser);
-        } else {
-          // Make new record to the database
-          new User({googleId: profile.id})
-            .save()
-            .then((user) => done(null, user));
-        }
-      });
+      const existingUser = await User.findOne({googleId: profile.id});
+
+      if (existingUser) {
+        // We already have a record with the given profile ID
+        return done(null, existingUser);
+      }
+      // Make new record to the database
+      const user = await new User({googleId: profile.id}).save();
+      done(null, user);
     }
   )
 );

@@ -8,13 +8,19 @@ module.exports = (app) => {
     })
   );
 
-  app.get('/auth/google/callback', passport.authenticate('google'));
+  app.get(
+    '/auth/google/callback',
+    passport.authenticate('google'),
+    (req, res) => {
+      res.redirect('/surveys');
+    }
+  );
 
   // ketika user kesini, log out
   app.get('/api/logout', (req, res) => {
     // metode logout berasal dari passport, jadi tinggal ngancurin cookie
     req.logout();
-    res.send(req.user);
+    res.redirect('/');
   });
 
   // ketika ada get request, kasih data siapa yang log in
